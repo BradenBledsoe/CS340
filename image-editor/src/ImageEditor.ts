@@ -1,44 +1,4 @@
-import * as fs from "fs";
-
-
-class Color {
-	public red: number;
-	public green: number;
-	public blue: number;
-	
-	constructor() {
-		this.red = 0;
-		this.green = 0;
-		this.blue = 0;
-	}
-}
-
-class Image {
-    private pixels: Color[][];
-	
-    constructor(width: number, height: number) {
-        //Initialize 2D array of Colors
-        this.pixels = Array.from({ length: width }, () =>
-            Array.from({ length: height }, () => new Color())
-        );
-	}
-	
-	public getWidth(): number {
-		return this.pixels.length;
-	}
-	
-	public getHeight(): number {
-		return this.pixels[0]!.length;
-	}
-	
-	public set(x: number, y: number, c: Color): void {
-		this.pixels[x]![y] = c;
-	}
-	
-	public get(x: number, y: number): Color {
-		return this.pixels[x]![y]!;
-	}
-}
+const fs = require("fs")
 
 /**
  * ImageEditor
@@ -57,7 +17,7 @@ class ImageEditor {
 
 			let image: Image = this.read(inputFile!);
 			
-			if (filter === "grayscale" || "greyscale") {
+			if (filter === "grayscale" || filter === "greyscale") {
 				if (args.length != 3) {
 					this.usage();
 					return;
@@ -111,7 +71,7 @@ class ImageEditor {
     }
 
     private usage(): void {
-		console.log("USAGE: java ImageEditor <in-file> <out-file> <grayscale|invert|emboss|motionblur> {motion-blur-length}\n");
+		console.log("USAGE: node ImageEditor <in-file> <out-file> <grayscale|invert|emboss|motionblur> {motion-blur-length}\n");
     }
 
     private motionblur(image : Image, length: number): void {
@@ -131,9 +91,9 @@ class ImageEditor {
 				}
 
 				const delta: number = (maxX - x + 1);
-				curColor.red /= delta;
-				curColor.green /= delta;
-				curColor.blue /= delta;
+				curColor.red = Math.floor(curColor.red / delta);
+                curColor.green = Math.floor(curColor.green / delta);
+                curColor.blue = Math.floor(curColor.blue / delta);
 			}
 		}
 	}
@@ -155,7 +115,7 @@ class ImageEditor {
 			for (let y = 0; y < image.getHeight(); ++y) {
 				let curColor: Color = image.get(x, y);
 								
-				let grayLevel: number = (curColor.red + curColor.green + curColor.blue) / 3;
+				let grayLevel: number = Math.floor((curColor.red + curColor.green + curColor.blue) / 3);
 				grayLevel = Math.max(0, Math.min(grayLevel, 255));
 				
 				curColor.red = grayLevel;
@@ -198,7 +158,7 @@ class ImageEditor {
         const data = fs.readFileSync(filePath, "utf-8");
         const tokens = data
             .split(/\s+/)
-            .filter(token => token.length > 0 && !token.startsWith("#"));
+            .filter((token: string) => token.length > 0 && !token.startsWith("#"));
         
         let idx = 0;
             
@@ -245,4 +205,48 @@ class ImageEditor {
 
         fs.writeFileSync(filePath, output.join("\n"));
 	}
+}
+
+class Color {
+	public red: number;
+	public green: number;
+	public blue: number;
+	
+	constructor() {
+		this.red = 0;
+		this.green = 0;
+		this.blue = 0;
+	}
+}
+
+class Image {
+    private pixels: Color[][];
+	
+    constructor(width: number, height: number) {
+        //Initialize 2D array of Colors
+        this.pixels = Array.from({ length: width }, () =>
+            Array.from({ length: height }, () => new Color())
+        );
+	}
+	
+	public getWidth(): number {
+		return this.pixels.length;
+	}
+	
+	public getHeight(): number {
+		return this.pixels[0]!.length;
+	}
+	
+	public set(x: number, y: number, c: Color): void {
+		this.pixels[x]![y] = c;
+	}
+	
+	public get(x: number, y: number): Color {
+		return this.pixels[x]![y]!;
+	}
+}
+
+if (require.main === module) {
+    const editor = new ImageEditor();
+    editor.run();
 }

@@ -2,10 +2,10 @@
   "name": "image-editor",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/ImageEditor.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/ImageEditor.ts",
+    "start": "node dist/ImageEditor.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
